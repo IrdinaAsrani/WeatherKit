@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Equipment Planner</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('hiking.jpg') no-repeat center center fixed;
+            background-size: cover;
+            opacity: 0.6; /* Set the opacity for the background image */
+            z-index: -1;
+        }
+
+        /* Header Styling */
+        header {
+            position: absolute;
+            top: 20px;
+            left: 20px; /* Keep logo aligned to the left */
+            display: flex;
+            align-items: center;
+            z-index: 1;
+            width: calc(100% - 40px); /* Make sure the header takes full width */
+            justify-content: space-between; /* Space between logo and navigation */
+        }
+
+        /* Logo Styling */
+        .logo {
+            width: 190px; /* Medium size for logo */
+            height: 130px;
+            margin-right: 20px; /* Space between logo and navigation */
+            margin-left: -30px;
+            margin-top: -40px;        
+        }
+
+        .navigation-links {
+            font-size: 1.2em;
+            color: #001e3f;
+            display: flow-root; /* Use flexbox for the navigation links */
+            margin-top: -25px;
+        }
+
+        .navigation-links a {
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            text-decoration: none;
+            margin-left: 20px; /* Space between links */
+            transition: color 0.3s, transform 0.3s; /* Add transition for color and transform */
+        }
+
+        .navigation-links a:hover {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            color: #001f41; /* Change color on hover */
+            text-shadow: #f5f100;
+            transform: scale(1.1); /* Slightly enlarge the text on hover */
+        }
+
+        /* Container Styling */
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Input and Button Styling */
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Checklist Styling */
+        .checklist {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .checklist h2 {
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .action-buttons {
+            margin-left: auto;
+            display: flex;
+            gap: 5px;
+        }
+
+        .update-btn, .delete-btn {
+            padding: 5px 10px;
+            font-size: 0.8em;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .update-btn {
+            background-color: #007bff;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header with Logo and Navigation Links -->
+    <header>
+        <img src="logo.png" alt="Logo" class="logo">
+        <div class="navigation-links">
+            <a href="index.html">Home</a>
+            <a href="activities.html">Activities</a>
+        </div>
+    </header>
+    <div class="container">
+        <h1 id="activityName">Activity:</h1>
+
+        <!-- New Input Field for Activity Name -->
+        <input type="text" id="activityInput" placeholder="Enter Activity Name" oninput="updateActivityName()">
+
+        <!-- Equipment Form -->
+        <input type="text" id="equipmentName" placeholder="Equipment Name" required>
+        <input type="text" id="equipmentDescription" placeholder="Description">
+        <button onclick="addEquipment()">Add Equipment</button>
+
+        <!-- Checklist Display -->
+        <div class="checklist">
+            <h2>Equipment Checklist :</h2>
+            <div id="checklistItems"></div>
+        </div>
+    </div>
+
+    <script>
+        // Display activity name from input field
+        function updateActivityName() {
+            const activityInput = document.getElementById('activityInput').value;
+            document.getElementById('activityName').innerText = `Activity: ${activityInput || "Unnamed Activity"}`;
+        }
+
+        // JavaScript to Manage Equipment List
+        const checklistItems = document.getElementById('checklistItems');
+
+        function addEquipment() {
+            const name = document.getElementById('equipmentName').value;
+            const description = document.getElementById('equipmentDescription').value;
+
+            if (name === "") {
+                alert("Please enter equipment name.");
+                return;
+            }
+
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('checklist-item');
+
+            itemDiv.innerHTML = `
+                <input type="checkbox">
+                <span>${name} - ${description}</span>
+                <div class="action-buttons">
+                    <button class="update-btn" onclick="updateEquipment(this)">Update</button>
+                    <button class="delete-btn" onclick="deleteEquipment(this)">Delete</button>
+                </div>
+            `;
+
+            checklistItems.appendChild(itemDiv);
+
+            // Clear input fields after adding
+            document.getElementById('equipmentName').value = '';
+            document.getElementById('equipmentDescription').value = '';
+        }
+
+        function updateEquipment(button) {
+            const itemDiv = button.parentElement.parentElement;
+            const text = itemDiv.querySelector('span').textContent;
+            const [name, description] = text.split(' - ');
+
+            document.getElementById('equipmentName').value = name.trim();
+            document.getElementById('equipmentDescription').value = description.trim();
+
+            // Remove the item for updating
+            deleteEquipment(button);
+        }
+
+        function deleteEquipment(button) {
+            const itemDiv = button.parentElement.parentElement;
+            checklistItems.removeChild(itemDiv);
+        }
+    </script>
+
+</body>
+</html>

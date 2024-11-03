@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Application</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMU2ln47EBr3iQzPoG73ib//4HCfbk+gQ5k5Q3" crossorigin="anonymous">
+    <style>
+        /* Adjusted styles for the logo */
+        body, html {
+            overflow: hidden;
+        }
+
+        /* Adjusted styles for the logo */
+        .header {
+            display: flex;
+            align-items: flex-start;
+            margin-left: -60px;
+            margin-top: -58px;
+        }
+
+        .logo {
+            width: 215px;
+            height: 150px;
+            margin-right: 90px;
+        }
+
+        /* Other styles */
+        body {
+            margin: 0;
+            font-family: 'Rubik', sans-serif;
+            background: #e2d39d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+        h1, h3 {
+            font-weight: 400;
+        }
+        
+        .weather-app {
+            position:sticky;
+            min-height: 100vh;
+            background-image: url('beach.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .weather-app::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 0;
+        }
+        
+        .container {
+            position: absolute;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-direction: column;
+            padding: 2em 3em 4em 3em;
+        }
+        
+        .container > div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .city-time, .temp, .weather {
+            margin: 0 1em;
+        }
+        
+        .city-time h1 {
+            margin: 0;
+            margin-bottom: 0.2em;
+        }
+        
+        .temp {
+            font-size: 7em;
+            margin: 0;
+        }
+        
+        .weather img {
+            display: block;
+            margin: 0.5em 0;
+        }
+        
+        .button {
+            display: inline-block;
+            padding: 1em 2em;
+            margin: 1em 0;
+            background-color: #fa6d1b;
+            color: white;
+            font-size: 0.8em;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            transition: background-color 0.4s, transform 0.2s;
+        }
+
+        .button:hover {
+            background-color: #04AA6D;
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 12px 16px rgba(0, 0, 0, 0.24), 0 17px 50px rgba(0, 0, 0, 0.19);
+        }
+
+        .panel {
+            position: absolute;
+            width: 40%;
+            height: auto;
+            top: 0;
+            right: 0;
+            background: rgba(110, 110, 110, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            z-index: 1;
+            padding: 3em 2em;
+        }
+        
+        .panel form {
+            margin-bottom: 3em;
+        }
+        .activities {
+            display: flex;
+            justify-content: center; /* Center the image horizontally */
+            margin-left: 80px;
+            margin-top: -25px;
+            margin-bottom: 90px;
+        }
+
+        .submit {
+            position: absolute;
+            top: 25px;
+            right: 15px;
+            padding: 1em; /* Reduced padding */
+            margin: 0;
+            border: none;
+            outline: none;
+            background: #fa6d1b;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1em; /* Reduced font size */
+            transition: 0.4s;
+        }
+        
+        .submit:hover {
+            background: #fff !important;
+            color: #000;
+        }
+        
+        .search {
+            background: none;
+            border: none;
+            border-bottom: 1px #ccc solid;
+            padding: 0 1em 0.5em 0;
+            width: 80%;
+            color: #fff;
+            font-size: 1.1em;
+        }
+        
+        .search::placeholder {
+            color: #ccc;
+        }
+        
+        .panel ul {
+            padding: 0 0 1em 0;
+            margin: 2em 0;
+            border-bottom: 1px #ccc solid;
+        }
+        
+        .panel ul li {
+            color: #ccc;
+            margin: 2.5em 0;
+        }
+        
+        .panel ul h4 {
+            margin: 3em 0;
+        }
+        
+        .city {
+            display: block;
+            cursor: pointer;
+        }
+        
+        .city:hover {
+            color: #fff;
+        }
+        
+        .details li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #activity-suggestions {
+            margin-bottom: 90px;
+            color: #fff;
+        }
+        
+        @media screen and (max-width: 800px) {
+            .panel, .container {
+                position: relative;
+                width: 100%;
+                top: initial;        
+            }
+        }
+        
+        @media screen and (max-width: 500px) {
+            html {
+                font-size: 12px;
+            }
+        }
+        
+        @media screen and (max-width: 300px) {
+            .weather-app {
+                min-height: 40em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="weather-app">
+        <div class="container">
+            <div class="header">
+                <img src="logo.png" alt="Logo" class="logo">
+            </div>
+            <div>
+                <h1 class="temp" id="temp">16&#176;</h1>
+                <div class="city-time">
+                    <h1 class="name" id="nameOutput">Maldives</h1>
+                    <small>
+                        <span class="time" id="timeOutput">06:09</span>
+                        -
+                        <span class="date" id="dateOutput">Monday June 12</span>
+                    </small>
+                </div>
+                <div class="weather">
+                    <img src="sun_icon.png" class="icon" id="icon" alt="icon" width="50" height="50"/>
+                    <span class="condition" id="conditionOutput">Cloudy</span>
+                </div>
+                <a href="activities.html" class="button">Add Activities</a><br>
+            </div>
+        </div>
+        <div class="panel">
+            <form id="locationInput" onsubmit="event.preventDefault(); fetchWeatherData(this[0].value);">
+                <input 
+                  type="text" 
+                  class="search" 
+                  placeholder="Search Location..."
+                  required
+                />
+                <button type="submit" class="submit">
+                    <img src="search.png" alt="Search Icon" width="20" height="20"> <!-- Add search icon -->
+                </button>
+            </form>
+
+            <ul class="cities">
+                <li class="city">Beranang</li>
+                <li class="city">Kuala Kangsar</li>
+                <li class="city">Gemas</li>
+                <li class="city">Songkhla</li>
+            </ul>
+            <ul class="details">
+                <h4>Weather Details</h4>
+                <li>
+                    <span>Cloudy</span>
+                    <span class="cloud" id="cloudOutput">89%</span>
+                </li>
+                <li>
+                    <span>Humidity</span>
+                    <span class="humidity" id="humidityOutput">64%</span>
+                </li>
+                <li>
+                    <span>Wind</span>
+                    <span class="wind" id="windOutput">8km/h</span>
+                </li>
+            </ul>
+            <div id="forecast"></div><br>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = '02d742af3cf444c5a0525828240111'; // Your WeatherAPI key
+        const currentWeatherUrl = 'https://api.weatherapi.com/v1/current.json';
+        const forecastUrl = `https://api.weatherapi.com/v1/forecast.json`;
+
+        function dayOfTheWeek(d, m, y) {
+            return new Date(`${y}-${m}-${d}`).toLocaleString('default', { weekday: 'long' });
+        }
+
+        function fetchWeatherData(cityInput) {
+            // URL encode the city input for safe usage in the API request
+            const encodedCityInput = encodeURIComponent(cityInput);
+
+            // Fetch current weather data
+            fetch(`${currentWeatherUrl}?key=${apiKey}&q=${encodedCityInput}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+
+                    // Populate HTML elements with fetched current weather data
+                    document.getElementById("temp").innerHTML = data.current.temp_c + "&#176;";
+                    document.getElementById("conditionOutput").innerHTML = data.current.condition.text;
+
+                    const date = data.location.localtime;
+                    const y = parseInt(date.substr(0, 4));
+                    const m = parseInt(date.substr(5, 2));
+                    const d = parseInt(date.substr(8, 2));
+                    const time = date.substr(11, 5);
+                    document.getElementById("nameOutput").innerHTML = data.location.name;
+                    document.getElementById("timeOutput").innerHTML = time;
+                    document.getElementById("dateOutput").innerHTML = `${dayOfTheWeek(d, m, y)} ${d}/${m}/${y}`;
+
+                    // Set the weather icon
+                    const weatherIcon = document.getElementById("icon");
+                    weatherIcon.src = data.current.condition.icon;
+
+                    // Populate weather details
+                    document.getElementById("cloudOutput").innerHTML = data.current.cloud + "%";
+                    document.getElementById("humidityOutput").innerHTML = data.current.humidity + "%";
+                    document.getElementById("windOutput").innerHTML = data.current.wind_kph + " km/h";
+                })
+                .catch(error => {
+                    console.error('Error fetching weather data:', error);
+                    alert('Error fetching weather data. Please try again.');
+                });
+        }
+    </script>
+</body>
+</html>

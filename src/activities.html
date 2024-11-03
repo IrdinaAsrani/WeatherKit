@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Planner</title>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('lake.jpg'); /* Set the background image */
+            background-size: cover; /* Cover the entire viewport */
+            background-position: center; /* Center the background image */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative; /* Required for the absolute positioning of the pseudo-element */
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('lake.jpg'); /* Set the same background image */
+            background-size: cover;
+            background-position: center;
+            opacity: 1.5%; /* Set the desired opacity for the background image */
+            z-index: -1; /* Place the overlay behind other content */
+        }
+
+        header {
+            position: absolute;
+            top: 20px; /* Adjusted to move the header down a bit */
+            left: 20px; /* Keep the header at the left */
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Space between logo and navigation links */
+            width: calc(100% - 40px); /* Ensure the header takes full width minus margins */
+            z-index: 1;
+        }
+        .logo {
+            width: 190px; /* Medium size for logo */
+            height: 130px;
+            margin-left: -30px;
+            margin-top: -40px;
+        }
+        .navigation-links {
+            font-size: 1.2em;
+            color: #f3f3f3;
+            display: flex; /* Use flexbox for the navigation links */
+            margin-top: -75px;
+        }
+
+        .navigation-links a {
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            text-decoration: none;
+            color: #f3f3f3;
+            margin: 0 10px;
+            transition: color 0.3s, transform 0.3s; /* Add transition for color and transform */
+        }
+        .navigation-links a:hover {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            color: #fdfdfd; /* Change color on hover */
+            text-shadow: #000000;
+            transform: scale(1.1); /* Slightly enlarge the text on hover */
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .form-container, .list-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        input, textarea{
+            width: 95%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            width: 95%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 1em;
+            margin-top: 15px;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            box-shadow: #110c0c;        
+            text-shadow: #110c0c;
+            background-color: #ddd;
+        }
+
+        .activity-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .activity-item h3 {
+            margin: 0;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .activity-item p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .activity-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .activity-buttons button {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: white;
+        }
+
+        .edit-btn { background-color: #28a745; }
+        .delete-btn { background-color: #dc3545; }
+        .add-equipment-btn { background-color: #ffc107; color: black; }
+
+        .edit-btn:hover{ background-color: #a4ebb4; color: #110c0c; }
+        .delete-btn:hover { background-color: #ee7985; color: #110c0c;}
+        .add-equipment-btn:hover { background-color: #fce190; color: black; }
+    </style>
+</head>
+    <header>
+        <img src="logo.png" alt="Logo" class="logo">
+        <div class="navigation-links">
+            <a href="index.html">Home</a>
+            <a href="equipment.html">Equipment</a>
+        </div>
+    </header>
+    <body>
+    <div class="container">
+        <!-- Plan New Activity Form -->
+        <div class="form-container">
+            <h2>Plan New Activity</h2>
+            <form id="activityForm">
+                <input type="text" id="activityTitle" placeholder="Activity Title" required>
+                <textarea id="activityDescription" placeholder="Description"></textarea>
+                <input type="date" id="activityDate" required>
+                <input type="text" id="activityLocation" placeholder="Location" required>
+                <button type="submit">Add Activity</button>
+            </form>
+        </div>
+        
+        <!-- Activities Plan List -->
+        <div class="list-container">
+            <h2>Activities Plan List</h2>
+            <div id="activityList"></div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript Code
+        const apiKey = '02d742af3cf444c5a0525828240111'; // Replace with your actual API key
+        const weatherApiUrl = 'https://api.weatherapi.com/v1/current.json';
+
+        const activityForm = document.getElementById('activityForm');
+        const activityList = document.getElementById('activityList');
+
+        activityForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('activityTitle').value;
+            const description = document.getElementById('activityDescription').value;
+            const date = document.getElementById('activityDate').value;
+            const location = document.getElementById('activityLocation').value;
+
+            addActivity(title, description, date, location);
+
+            activityForm.reset();
+        });
+
+        function addActivity(title, description, date, location) {
+            const activityItem = document.createElement('div');
+            activityItem.classList.add('activity-item');
+
+            activityItem.innerHTML = `
+                <h3>${title}</h3>
+                <p>${description}</p>
+                <p><strong>Date:</strong> ${date}</p>
+                <p><strong>Location:</strong> ${location}</p>
+                <p><strong>Weather Forecast:</strong> <span class="weather-forecast">Loading...</span></p>
+                <div class="activity-buttons">
+                    <button class="edit-btn" onclick="editActivity(this)">Edit</button>
+                    <button class="delete-btn" onclick="deleteActivity(this)">Delete</button>
+                    <button class="add-equipment-btn" onclick="window.location.href='equipment.html'">Add Equipment</button>
+                </div>
+            `;
+
+            const weatherForecastElement = activityItem.querySelector('.weather-forecast');
+            getWeatherForecast(location, weatherForecastElement);
+
+            activityList.appendChild(activityItem);
+        }
+
+        function editActivity(button) {
+            const activityItem = button.closest('.activity-item');
+            const title = activityItem.querySelector('h3').innerText;
+            const description = activityItem.querySelector('p:nth-of-type(1)').innerText;
+            const date = activityItem.querySelector('p:nth-of-type(2)').innerText.split(': ')[1];
+            const location = activityItem.querySelector('p:nth-of-type(3)').innerText.split(': ')[1];
+
+            document.getElementById('activityTitle').value = title;
+            document.getElementById('activityDescription').value = description;
+            document.getElementById('activityDate').value = date;
+            document.getElementById('activityLocation').value = location;
+
+            // Remove the activity from the list for editing
+            deleteActivity(button);
+        }
+
+        function deleteActivity(button) {
+            const activityItem = button.closest('.activity-item');
+            activityList.removeChild(activityItem);
+        }
+
+        function getWeatherForecast(location, forecastElement) {
+            const apiUrl = `${weatherApiUrl}?key=${apiKey}&q=${location}`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const weatherText = `${data.current.condition.text}, ${data.current.temp_c}°C`;
+                    forecastElement.textContent = weatherText;
+                })
+                .catch(error => {
+                    console.error('Error fetching weather data:', error);
+                    forecastElement.textContent = 'Error fetching data';
+                });
+        }
+    </script>
+</body>
+</html>
